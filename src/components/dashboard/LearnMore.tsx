@@ -29,15 +29,17 @@ export default function LearnMore() {
           value={`item-${i}`}
           className="border-b border-border last:border-b-0"
         >
-          <AccordionTrigger className="px-5 py-4 hover:bg-secondary/60 hover:no-underline text-left">
-            <div className="flex items-baseline gap-4">
-              <span className="font-mono text-xs text-primary">
-                {String(i + 1).padStart(2, "0")}
+          <AccordionTrigger className="px-5 py-5 hover:bg-secondary/60 hover:no-underline text-left group">
+            <div className="flex items-baseline gap-5 w-full">
+              <span className="num text-xs text-primary shrink-0">
+                Q.{String(i + 1).padStart(2, "0")}
               </span>
-              <span className="text-sm font-medium">{item.q}</span>
+              <span className="text-base font-medium group-hover:text-primary transition-colors">
+                {item.q}
+              </span>
             </div>
           </AccordionTrigger>
-          <AccordionContent className="px-5 pb-5 pl-14 text-sm text-muted-foreground leading-relaxed">
+          <AccordionContent className="px-5 pb-6 pl-[68px] text-sm text-muted-foreground leading-relaxed max-w-4xl">
             {item.a}
           </AccordionContent>
         </AccordionItem>

@@ -4,14 +4,15 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Swiss / Brutalist design system. HSL only. */
+/* ============================================================
+   Swiss / Brutalist design system — risk_engine.py
+   HSL only. No radii. No shadows. Hairline 1px borders.
+   ============================================================ */
 
 @layer base {
   :root {
-    /* #FAFAFA */
-    --background: 0 0% 98%;
-    /* #0A0A0A */
-    --foreground: 0 0% 4%;
+    --background: 0 0% 98%;        /* #FAFAFA */
+    --foreground: 0 0% 4%;         /* #0A0A0A */
 
     --card: 0 0% 100%;
     --card-foreground: 0 0% 4%;
@@ -19,34 +20,33 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 4%;
 
-    /* Klein Blue #002FA7 */
-    --primary: 222 100% 33%;
+    --primary: 222 100% 33%;       /* Klein Blue #002FA7 */
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 96%;
     --secondary-foreground: 0 0% 4%;
 
     --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 35%;
+    --muted-foreground: 0 0% 38%;
 
     --accent: 222 100% 33%;
     --accent-foreground: 0 0% 100%;
 
-    /* Signal Red #FF3B30 */
-    --destructive: 4 100% 59%;
+    --destructive: 4 100% 59%;     /* Signal Red #FF3B30 */
     --destructive-foreground: 0 0% 100%;
 
-    /* #E5E5E5 */
-    --border: 0 0% 90%;
+    --border: 0 0% 90%;            /* #E5E5E5 */
     --input: 0 0% 90%;
     --ring: 222 100% 33%;
-
     --radius: 0px;
 
     /* Semantic extras */
-    --positive: 145 63% 35%;
+    --positive: 145 63% 32%;
     --negative: 4 100% 59%;
     --surface: 0 0% 100%;
+    --hairline: 0 0% 85%;
+    --ink: 0 0% 4%;
+    --paper: 0 0% 98%;
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 0 0% 4%;
@@ -70,7 +70,7 @@
     --secondary: 0 0% 96%;
     --secondary-foreground: 0 0% 4%;
     --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 35%;
+    --muted-foreground: 0 0% 38%;
     --accent: 222 100% 33%;
     --accent-foreground: 0 0% 100%;
     --destructive: 4 100% 59%;
@@ -90,11 +90,43 @@
     @apply bg-background text-foreground;
     font-family: 'IBM Plex Sans', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
-  /* Brutalist: kill all radii globally as a safety net */
+  /* Brutalist safety net — kill all radii everywhere */
   *, *::before, *::after {
     border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  ::selection {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  /* Native form controls */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 2px;
+    background: hsl(var(--foreground));
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: hsl(var(--primary));
+    cursor: pointer;
+    border: 0;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: hsl(var(--primary));
+    cursor: pointer;
+    border: 0;
   }
 }
 
@@ -105,13 +137,41 @@
   .font-sans {
     font-family: 'IBM Plex Sans', system-ui, sans-serif;
   }
+  /* Numeric utility — every digit on the page must use this */
   .num {
     font-family: 'IBM Plex Mono', ui-monospace, monospace;
     font-variant-numeric: tabular-nums;
-    font-feature-settings: "tnum";
+    font-feature-settings: "tnum", "zero";
+    letter-spacing: -0.01em;
   }
   .text-negative { color: hsl(var(--negative)); }
   .text-positive { color: hsl(var(--positive)); }
   .bg-negative   { background-color: hsl(var(--negative)); }
   .bg-positive   { background-color: hsl(var(--positive)); }
+  .border-hairline { border-color: hsl(var(--hairline)); }
+
+  /* Micro caps label — used everywhere for axis/section/field labels */
+  .label-mono {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 10px;
+    line-height: 1;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: hsl(var(--muted-foreground));
+  }
+
+  /* Big display numeral */
+  .display-num {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    font-weight: 500;
+    letter-spacing: -0.03em;
+  }
+
+  /* Subtle dotted-grid background for hero areas */
+  .grid-bg {
+    background-image: radial-gradient(hsl(var(--hairline)) 1px, transparent 1px);
+    background-size: 16px 16px;
+  }
 }

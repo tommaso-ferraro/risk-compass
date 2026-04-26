@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2, AlertOctagon } from "lucide-react";
 import { api, type AnalyzeResponse, type Defaults, BACKEND_URL } from "@/lib/api";
 import ControlPanel, { type SidebarState } from "@/components/dashboard/ControlPanel";
@@ -20,9 +20,7 @@ function dateRangeFromLookback(years: number) {
 
 function renormalize(weights: number[]) {
   const sum = weights.reduce((a, b) => a + b, 0);
-  if (sum <= 0) {
-    return weights.map(() => 1 / weights.length);
-  }
+  if (sum <= 0) return weights.map(() => 1 / weights.length);
   return weights.map((w) => w / sum);
 }
 
@@ -33,7 +31,6 @@ const Index = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Initial defaults load
   useEffect(() => {
     (async () => {
       try {
@@ -103,26 +100,27 @@ const Index = () => {
       )}
 
       <main className="flex-1 min-w-0">
-        {/* Top status bar */}
-        <div className="px-8 py-2 border-b border-border bg-surface flex items-center justify-between">
-          <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            backend → {BACKEND_URL}
+        {/* Status bar — terminal style */}
+        <div className="px-6 md:px-10 py-2 border-b border-border bg-foreground text-background flex items-center justify-between">
+          <div className="flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.18em]">
+            <span className="flex items-center gap-1.5">
+              <span className={`h-1.5 w-1.5 ${loading ? "bg-destructive animate-pulse" : "bg-positive"}`} />
+              {loading ? "live · computing" : "live · ready"}
+            </span>
+            <span className="text-background/60 hidden md:inline">
+              backend → {BACKEND_URL}
+            </span>
           </div>
-          {loading && (
-            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-primary">
-              <Loader2 className="h-3 w-3 animate-spin" />
-              Fetching market data from Yahoo Finance…
-            </div>
-          )}
+          <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-background/60">
+            {new Date().toISOString().slice(0, 10)}
+          </div>
         </div>
 
         {error && (
-          <div className="mx-8 mt-6 border border-negative bg-negative/5 p-4 flex items-start gap-3">
+          <div className="mx-6 md:mx-10 mt-6 border-2 border-negative bg-negative/5 p-4 flex items-start gap-3">
             <AlertOctagon className="h-4 w-4 text-negative shrink-0 mt-0.5" />
             <div>
-              <div className="font-mono text-[10px] uppercase tracking-wider text-negative mb-1">
-                Error
-              </div>
+              <div className="label-mono text-negative mb-1">Error</div>
               <div className="text-sm text-foreground">{error}</div>
             </div>
           </div>
@@ -134,6 +132,13 @@ const Index = () => {
               <Loader2 className="h-4 w-4 animate-spin" />
               Initialising risk engine…
             </div>
+          </div>
+        )}
+
+        {loading && data && (
+          <div className="px-6 md:px-10 py-2 border-b border-border bg-secondary flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-primary">
+            <Loader2 className="h-3 w-3 animate-spin" />
+            Fetching market data from Yahoo Finance…
           </div>
         )}
 
@@ -161,21 +166,28 @@ const Index = () => {
               <LearnMore />
             </Section>
 
-            <footer className="px-8 py-6 bg-foreground text-background">
-              <div className="flex flex-wrap gap-x-8 gap-y-2 justify-between font-mono text-[10px] uppercase tracking-widest">
+            <footer className="bg-foreground text-background">
+              <div className="px-6 md:px-10 py-8 grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                  Data source ·{" "}
-                  <span className="text-background/70">
+                  <div className="label-mono text-background/50 mb-2">Data source</div>
+                  <div className="font-mono text-sm">
                     {data.meta.data_source ?? "Yahoo Finance"}
-                  </span>
+                  </div>
                 </div>
                 <div>
-                  Range ·{" "}
-                  <span className="num normal-case tracking-normal">
+                  <div className="label-mono text-background/50 mb-2">Range</div>
+                  <div className="num text-sm">
                     {data.meta.start_date} → {data.meta.end_date}
-                  </span>
+                  </div>
                 </div>
-                <div className="text-background/60">risk_engine.py · v1.0</div>
+                <div className="md:text-right">
+                  <div className="label-mono text-background/50 mb-2">Engine</div>
+                  <div className="font-mono text-sm">risk_engine.py · v1.0</div>
+                </div>
+              </div>
+              <div className="border-t border-background/20 px-6 md:px-10 py-3 font-mono text-[10px] uppercase tracking-[0.18em] text-background/50 flex justify-between">
+                <span>// end of report</span>
+                <span>© risk_engine</span>
               </div>
             </footer>
           </>
