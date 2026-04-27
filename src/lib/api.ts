@@ -45,34 +45,41 @@ export type AnalyzeResponse = {
     portfolio: TickerStats;
   };
   portfolio: {
-    annual_return: number;
-    annual_volatility: number;
+    ann_return: number;
+    ann_vol: number;
     sharpe: number;
+    max_drawdown: number;
+    mdd_pct: number;
     portfolio_value: number;
   };
   var: {
-    historical: { loss_pct: number; loss_eur: number };
-    parametric: { loss_pct: number; loss_eur: number };
-    cornish_fisher: { loss_pct: number; loss_eur: number };
-    cvar_historical: { loss_pct: number; loss_eur: number };
-    cvar_parametric: { loss_pct: number; loss_eur: number };
+    historical: { var_pct: number; var_eur: number };
+    parametric: { var_pct: number; var_eur: number };
+    cornish_fisher: { var_pct: number; var_eur: number };
+    cvar_historical: { cvar_pct: number; cvar_eur: number };
+    cvar_parametric: { cvar_pct: number; cvar_eur: number };
     confidence: number;
   };
   normality: {
-    jarque_bera_stat: number;
+    statistic: number;
     p_value: number;
-    is_normal: boolean;
+    skewness: number;
+    excess_kurtosis: number;
+    normal: boolean;
+    interpretation: string;
   };
   correlation: {
-    matrix_png_b64: string;
-    most_correlated: { pair: [string, string]; value: number };
-    least_correlated: { pair: [string, string]; value: number };
+    matrix_png_b64?: string;
+    correlation?: string;
+    highest_pair: { pair: string; correlation: number };
+    lowest_pair: { pair: string; correlation: number };
   };
   charts: {
-    return_distribution_b64: string;
-    cumulative_performance_b64: string;
-    rolling_var_b64: string;
-    drawdown_b64: string;
+    distribution: string;
+    performance: string;
+    rolling_var: string;
+    drawdown: string;
+    correlation: string;
   };
 };
 

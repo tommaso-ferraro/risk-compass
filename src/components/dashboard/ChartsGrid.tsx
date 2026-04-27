@@ -1,10 +1,10 @@
 import type { AnalyzeResponse } from "@/lib/api";
 
 const LABELS: Array<{ key: keyof AnalyzeResponse["charts"]; tag: string; title: string; subtitle: string }> = [
-  { key: "return_distribution_b64", tag: "A", title: "Return distribution", subtitle: "histogram · daily log-returns" },
-  { key: "cumulative_performance_b64", tag: "B", title: "Cumulative performance", subtitle: "growth of 1 unit" },
-  { key: "rolling_var_b64", tag: "C", title: "Rolling VaR", subtitle: "63-day window" },
-  { key: "drawdown_b64", tag: "D", title: "Drawdown", subtitle: "peak-to-trough" },
+  { key: "distribution", tag: "A", title: "Return distribution", subtitle: "histogram · daily log-returns" },
+  { key: "performance", tag: "B", title: "Cumulative performance", subtitle: "growth of 1 unit" },
+  { key: "rolling_var", tag: "C", title: "Rolling VaR", subtitle: "63-day window" },
+  { key: "drawdown", tag: "D", title: "Drawdown", subtitle: "peak-to-trough" },
 ];
 
 export default function ChartsGrid({ data }: { data: AnalyzeResponse }) {
