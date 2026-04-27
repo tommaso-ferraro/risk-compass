@@ -3,67 +3,97 @@ import { fmtMoney, fmtPct } from "@/lib/format";
 import type { AnalyzeResponse } from "@/lib/api";
 
 export default function VarSection({ data }: { data: AnalyzeResponse }) {
-  const n = data.normality;
-  const conf = (data.var.confidence * 100).toFixed(0);
+  const n = data?.normality;
+  const vroot = data?.var;
+  const confRaw =
+    vroot?.confidence ?? vroot?.historical?.confidence ?? vroot?.parametric?.confidence;
+  const conf = typeof confRaw === "number" ? (confRaw * 100).toFixed(0) : "—";
 
   const rows = [
-    { method: "Historical VaR", desc: "Empirical quantile of observed returns", loss_pct: data.var.historical.var_pct, loss_eur: data.var.historical.var_eur },
-    { method: "Parametric VaR", desc: "Gaussian assumption · μ ± z·σ", loss_pct: data.var.parametric.var_pct, loss_eur: data.var.parametric.var_eur },
-    { method: "Cornish-Fisher VaR", desc: "Adjusted for skewness & kurtosis", loss_pct: data.var.cornish_fisher.var_pct, loss_eur: data.var.cornish_fisher.var_eur },
-    { method: "CVaR Historical", desc: "Expected loss beyond historical VaR", loss_pct: data.var.cvar_historical.cvar_pct, loss_eur: data.var.cvar_historical.cvar_eur },
-    { method: "CVaR Parametric", desc: "Expected loss beyond parametric VaR", loss_pct: data.var.cvar_parametric.cvar_pct, loss_eur: data.var.cvar_parametric.cvar_eur },
+    {
+      method: "Historical VaR",
+      desc: "Empirical quantile of observed returns",
+      loss_pct: vroot?.historical?.var_pct,
+      loss_eur: vroot?.historical?.var_eur,
+    },
+    {
+      method: "Parametric VaR",
+      desc: "Gaussian assumption · μ ± z·σ",
+      loss_pct: vroot?.parametric?.var_pct,
+      loss_eur: vroot?.parametric?.var_eur,
+    },
+    {
+      method: "Cornish-Fisher VaR",
+      desc: "Adjusted for skewness & kurtosis",
+      loss_pct: vroot?.cornish_fisher?.var_pct,
+      loss_eur: vroot?.cornish_fisher?.var_eur,
+    },
+    {
+      method: "CVaR Historical",
+      desc: "Expected loss beyond historical VaR",
+      loss_pct: vroot?.cvar_historical?.cvar_pct,
+      loss_eur: vroot?.cvar_historical?.cvar_eur,
+    },
+    {
+      method: "CVaR Parametric",
+      desc: "Expected loss beyond parametric VaR",
+      loss_pct: vroot?.cvar_parametric?.cvar_pct,
+      loss_eur: vroot?.cvar_parametric?.cvar_eur,
+    },
   ];
 
-  // Worst (largest absolute loss) for visual scale
-  const maxLoss = Math.max(...rows.map((r) => Math.abs(r.loss_pct)));
+  const maxLoss = Math.max(
+    ...rows.map((r) => (typeof r.loss_pct === "number" ? Math.abs(r.loss_pct) : 0)),
+    0
+  );
 
   return (
     <div className="space-y-8">
-      {/* Jarque-Bera banner */}
-      <div
-        className={`border-2 ${
-          n.normal ? "border-positive" : "border-negative"
-        }`}
-      >
-        <div className="grid grid-cols-[auto_1fr_auto] items-stretch">
-          <div
-            className={`flex items-center justify-center px-5 ${
-              n.normal ? "bg-positive" : "bg-negative"
-            }`}
-          >
-            {n.normal ? (
-              <Check className="h-6 w-6 text-background" strokeWidth={3} />
-            ) : (
-              <X className="h-6 w-6 text-background" strokeWidth={3} />
-            )}
-          </div>
-          <div className="px-5 py-4 border-l border-r border-border">
-            <div className="label-mono mb-1">JARQUE_BERA · NORMALITY_TEST</div>
+      {n && (
+        <div className={`border-2 ${n.normal ? "border-positive" : "border-negative"}`}>
+          <div className="grid grid-cols-[auto_1fr_auto] items-stretch">
             <div
-              className={`text-sm font-semibold ${
-                n.normal ? "text-positive" : "text-negative"
+              className={`flex items-center justify-center px-5 ${
+                n.normal ? "bg-positive" : "bg-negative"
               }`}
             >
-              {n.interpretation ??
-                (n.normal
-                  ? "Normality NOT rejected — Gaussian assumptions are reasonable"
-                  : "Normality REJECTED — distribution exhibits non-Gaussian tails")}
+              {n.normal ? (
+                <Check className="h-6 w-6 text-background" strokeWidth={3} />
+              ) : (
+                <X className="h-6 w-6 text-background" strokeWidth={3} />
+              )}
             </div>
-            <div className="num text-[10px] text-muted-foreground mt-2">
-              skew = {n.skewness?.toFixed(3)} · excess kurt = {n.excess_kurtosis?.toFixed(3)}
+            <div className="px-5 py-4 border-l border-r border-border">
+              <div className="label-mono mb-1">JARQUE_BERA · NORMALITY_TEST</div>
+              <div
+                className={`text-sm font-semibold ${
+                  n.normal ? "text-positive" : "text-negative"
+                }`}
+              >
+                {n.interpretation ??
+                  (n.normal
+                    ? "Normality NOT rejected — Gaussian assumptions are reasonable"
+                    : "Normality REJECTED — distribution exhibits non-Gaussian tails")}
+              </div>
+              <div className="num text-[10px] text-muted-foreground mt-2">
+                skew = {typeof n.skewness === "number" ? n.skewness.toFixed(3) : "—"} · excess kurt ={" "}
+                {typeof n.excess_kurtosis === "number" ? n.excess_kurtosis.toFixed(3) : "—"}
+              </div>
             </div>
-          </div>
-          <div className="px-5 py-4 flex flex-col justify-center text-right">
-            <div className="num text-xs text-muted-foreground">JB</div>
-            <div className="num text-base font-semibold">{n.statistic.toFixed(2)}</div>
-            <div className="num text-[10px] text-muted-foreground mt-1">
-              p = {n.p_value.toExponential(2)}
+            <div className="px-5 py-4 flex flex-col justify-center text-right">
+              <div className="num text-xs text-muted-foreground">JB</div>
+              <div className="num text-base font-semibold">
+                {typeof n.statistic === "number" ? n.statistic.toFixed(2) : "—"}
+              </div>
+              <div className="num text-[10px] text-muted-foreground mt-1">
+                p ={" "}
+                {typeof n.p_value === "number" ? n.p_value.toExponential(2) : "—"}
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Method table */}
       <div className="border border-border bg-surface">
         <table className="w-full text-sm border-collapse">
           <thead>
@@ -77,7 +107,9 @@ export default function VarSection({ data }: { data: AnalyzeResponse }) {
           </thead>
           <tbody>
             {rows.map((r, i) => {
-              const ratio = Math.abs(r.loss_pct) / (maxLoss || 1);
+              const absLoss =
+                typeof r.loss_pct === "number" ? Math.abs(r.loss_pct) : 0;
+              const ratio = maxLoss > 0 ? absLoss / maxLoss : 0;
               return (
                 <tr
                   key={r.method}
@@ -98,7 +130,7 @@ export default function VarSection({ data }: { data: AnalyzeResponse }) {
                     {fmtPct(r.loss_pct)}
                   </td>
                   <td className="px-4 py-3.5 text-right num text-negative align-top">
-                    −{fmtMoney(r.loss_eur)}
+                    {typeof r.loss_eur === "number" ? `−${fmtMoney(r.loss_eur)}` : "—"}
                   </td>
                   <td className="px-4 py-3.5 align-middle w-1/4">
                     <div className="h-2 bg-secondary relative">
@@ -116,13 +148,12 @@ export default function VarSection({ data }: { data: AnalyzeResponse }) {
       </div>
 
       <p className="text-sm text-muted-foreground leading-relaxed max-w-3xl border-l-2 border-primary pl-4">
-        At the <span className="num text-foreground">{conf}%</span> confidence
-        level, VaR estimates the worst expected daily loss under normal market
-        conditions, while CVaR (Expected Shortfall) measures the average loss in
-        the tail beyond that threshold. Divergence between historical,
-        parametric, and Cornish-Fisher estimates reveals the degree of
-        non-normality — when fat tails or skew are present, Gaussian
-        assumptions systematically understate tail risk.
+        At the <span className="num text-foreground">{conf}%</span> confidence level, VaR
+        estimates the worst expected daily loss under normal market conditions, while CVaR
+        (Expected Shortfall) measures the average loss in the tail beyond that threshold.
+        Divergence between historical, parametric, and Cornish-Fisher estimates reveals the
+        degree of non-normality — when fat tails or skew are present, Gaussian assumptions
+        systematically understate tail risk.
       </p>
     </div>
   );

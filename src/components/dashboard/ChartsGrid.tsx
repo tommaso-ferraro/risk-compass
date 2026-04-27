@@ -8,30 +8,34 @@ const LABELS: Array<{ key: keyof AnalyzeResponse["charts"]; tag: string; title: 
 ];
 
 export default function ChartsGrid({ data }: { data: AnalyzeResponse }) {
+  const charts = data?.charts;
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 border border-border bg-border gap-px">
-      {LABELS.map(({ key, tag, title, subtitle }) => (
-        <figure key={key} className="bg-surface p-5">
-          <figcaption className="flex items-baseline justify-between mb-4 pb-3 border-b border-border">
-            <div className="flex items-baseline gap-3">
-              <span className="num text-base font-semibold text-primary">[{tag}]</span>
-              <span className="font-semibold text-sm">{title}</span>
-            </div>
-            <span className="label-mono">{subtitle}</span>
-          </figcaption>
-          {data.charts[key] ? (
-            <img
-              src={`data:image/png;base64,${data.charts[key]}`}
-              alt={title}
-              className="w-full h-auto block"
-            />
-          ) : (
-            <div className="aspect-video bg-secondary flex items-center justify-center font-mono text-xs text-muted-foreground">
-              no data
-            </div>
-          )}
-        </figure>
-      ))}
+      {LABELS.map(({ key, tag, title, subtitle }) => {
+        const src = charts?.[key];
+        return (
+          <figure key={key} className="bg-surface p-5">
+            <figcaption className="flex items-baseline justify-between mb-4 pb-3 border-b border-border">
+              <div className="flex items-baseline gap-3">
+                <span className="num text-base font-semibold text-primary">[{tag}]</span>
+                <span className="font-semibold text-sm">{title}</span>
+              </div>
+              <span className="label-mono">{subtitle}</span>
+            </figcaption>
+            {src ? (
+              <img
+                src={`data:image/png;base64,${src}`}
+                alt={title}
+                className="w-full h-auto block"
+              />
+            ) : (
+              <div className="aspect-video bg-secondary flex items-center justify-center font-mono text-xs text-muted-foreground">
+                no data
+              </div>
+            )}
+          </figure>
+        );
+      })}
     </div>
   );
 }

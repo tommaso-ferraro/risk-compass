@@ -4,33 +4,33 @@ import type { AnalyzeResponse } from "@/lib/api";
 type Props = { data: AnalyzeResponse };
 
 export default function HeroHeader({ data }: Props) {
-  const p = data.portfolio;
-  const v = data.var.historical;
-  const c = data.var.cvar_historical;
-  const conf = (data.var.confidence * 100).toFixed(0);
+  const p = data?.portfolio ?? ({} as AnalyzeResponse["portfolio"]);
+  const v = data?.var?.historical;
+  const c = data?.var?.cvar_historical;
+  const confRaw = data?.var?.confidence ?? v?.confidence ?? c?.confidence;
+  const conf = typeof confRaw === "number" ? (confRaw * 100).toFixed(0) : "—";
 
   const kpis = [
-    { label: "PORTFOLIO_VALUE", value: fmtMoney(p.portfolio_value) },
-    { label: "ANN_RETURN", value: fmtPct(p.ann_return), neg: isNeg(p.ann_return) },
-    { label: "ANN_VOLATILITY", value: fmtPct(p.ann_vol) },
-    { label: "SHARPE", value: fmtNum(p.sharpe), neg: isNeg(p.sharpe) },
+    { label: "PORTFOLIO_VALUE", value: fmtMoney(p?.portfolio_value) },
+    { label: "ANN_RETURN", value: fmtPct(p?.ann_return), neg: isNeg(p?.ann_return) },
+    { label: "ANN_VOLATILITY", value: fmtPct(p?.ann_vol) },
+    { label: "SHARPE", value: fmtNum(p?.sharpe), neg: isNeg(p?.sharpe) },
     {
       label: `VAR_${conf}`,
-      value: fmtPct(v.var_pct),
-      sub: `−${fmtMoney(v.var_eur)}`,
+      value: fmtPct(v?.var_pct),
+      sub: v?.var_eur != null ? `−${fmtMoney(v.var_eur)}` : undefined,
       neg: true,
     },
     {
       label: `CVAR_${conf}`,
-      value: fmtPct(c.cvar_pct),
-      sub: `−${fmtMoney(c.cvar_eur)}`,
+      value: fmtPct(c?.cvar_pct),
+      sub: c?.cvar_eur != null ? `−${fmtMoney(c.cvar_eur)}` : undefined,
       neg: true,
     },
   ];
 
   return (
     <header className="border-b border-border">
-      {/* Title block — bold Swiss column */}
       <div className="grid grid-cols-[80px_1fr] md:grid-cols-[120px_1fr] border-b border-border bg-surface grid-bg">
         <div className="border-r border-border px-4 py-10 bg-surface flex flex-col justify-between">
           <span className="num text-[10px] text-primary">001</span>
@@ -47,19 +47,25 @@ export default function HeroHeader({ data }: Props) {
           </h1>
           <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-2 label-mono">
             <span>
-              range · <span className="num normal-case tracking-normal text-foreground">{data.meta.start_date} → {data.meta.end_date}</span>
+              range ·{" "}
+              <span className="num normal-case tracking-normal text-foreground">
+                {data?.meta?.start_date ?? "—"} → {data?.meta?.end_date ?? "—"}
+              </span>
             </span>
             <span>
-              source · <span className="normal-case tracking-wide text-foreground">{data.meta.data_source ?? "Yahoo Finance"}</span>
+              source ·{" "}
+              <span className="normal-case tracking-wide text-foreground">
+                {data?.meta?.data_source ?? "Yahoo Finance"}
+              </span>
             </span>
             <span>
-              confidence · <span className="num normal-case tracking-normal text-foreground">{conf}%</span>
+              confidence ·{" "}
+              <span className="num normal-case tracking-normal text-foreground">{conf}%</span>
             </span>
           </div>
         </div>
       </div>
 
-      {/* KPI strip */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
         {kpis.map((k, i) => {
           const isLastCol = (i + 1) % 6 === 0;
@@ -89,9 +95,7 @@ export default function HeroHeader({ data }: Props) {
                 {k.value}
               </div>
               {k.sub && (
-                <div className="num text-xs text-muted-foreground mt-2">
-                  {k.sub}
-                </div>
+                <div className="num text-xs text-muted-foreground mt-2">{k.sub}</div>
               )}
             </div>
           );
