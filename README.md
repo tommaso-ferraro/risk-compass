@@ -1,3 +1,5 @@
-# Welcome to your Lovable project
+# Portfolio Risk Analytics Dashboard
 
-TODO: Document your project here
+Quantitative risk dashboard — VaR, CVaR, Cornish-Fisher, Sharpe, MDD
+
+Built with FastAPI + React. Backend on HuggingFace, frontend on Vercel.
