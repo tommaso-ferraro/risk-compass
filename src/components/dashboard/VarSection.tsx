@@ -7,11 +7,11 @@ export default function VarSection({ data }: { data: AnalyzeResponse }) {
   const conf = (data.var.confidence * 100).toFixed(0);
 
   const rows = [
-    { method: "Historical VaR", desc: "Empirical quantile of observed returns", ...data.var.historical },
-    { method: "Parametric VaR", desc: "Gaussian assumption · μ ± z·σ", ...data.var.parametric },
-    { method: "Cornish-Fisher VaR", desc: "Adjusted for skewness & kurtosis", ...data.var.cornish_fisher },
-    { method: "CVaR Historical", desc: "Expected loss beyond historical VaR", ...data.var.cvar_historical },
-    { method: "CVaR Parametric", desc: "Expected loss beyond parametric VaR", ...data.var.cvar_parametric },
+    { method: "Historical VaR", desc: "Empirical quantile of observed returns", loss_pct: data.var.historical.var_pct, loss_eur: data.var.historical.var_eur },
+    { method: "Parametric VaR", desc: "Gaussian assumption · μ ± z·σ", loss_pct: data.var.parametric.var_pct, loss_eur: data.var.parametric.var_eur },
+    { method: "Cornish-Fisher VaR", desc: "Adjusted for skewness & kurtosis", loss_pct: data.var.cornish_fisher.var_pct, loss_eur: data.var.cornish_fisher.var_eur },
+    { method: "CVaR Historical", desc: "Expected loss beyond historical VaR", loss_pct: data.var.cvar_historical.cvar_pct, loss_eur: data.var.cvar_historical.cvar_eur },
+    { method: "CVaR Parametric", desc: "Expected loss beyond parametric VaR", loss_pct: data.var.cvar_parametric.cvar_pct, loss_eur: data.var.cvar_parametric.cvar_eur },
   ];
 
   // Worst (largest absolute loss) for visual scale
@@ -22,16 +22,16 @@ export default function VarSection({ data }: { data: AnalyzeResponse }) {
       {/* Jarque-Bera banner */}
       <div
         className={`border-2 ${
-          n.is_normal ? "border-positive" : "border-negative"
+          n.normal ? "border-positive" : "border-negative"
         }`}
       >
         <div className="grid grid-cols-[auto_1fr_auto] items-stretch">
           <div
             className={`flex items-center justify-center px-5 ${
-              n.is_normal ? "bg-positive" : "bg-negative"
+              n.normal ? "bg-positive" : "bg-negative"
             }`}
           >
-            {n.is_normal ? (
+            {n.normal ? (
               <Check className="h-6 w-6 text-background" strokeWidth={3} />
             ) : (
               <X className="h-6 w-6 text-background" strokeWidth={3} />
@@ -41,17 +41,21 @@ export default function VarSection({ data }: { data: AnalyzeResponse }) {
             <div className="label-mono mb-1">JARQUE_BERA · NORMALITY_TEST</div>
             <div
               className={`text-sm font-semibold ${
-                n.is_normal ? "text-positive" : "text-negative"
+                n.normal ? "text-positive" : "text-negative"
               }`}
             >
-              {n.is_normal
-                ? "Normality NOT rejected — Gaussian assumptions are reasonable"
-                : "Normality REJECTED — distribution exhibits non-Gaussian tails"}
+              {n.interpretation ??
+                (n.normal
+                  ? "Normality NOT rejected — Gaussian assumptions are reasonable"
+                  : "Normality REJECTED — distribution exhibits non-Gaussian tails")}
+            </div>
+            <div className="num text-[10px] text-muted-foreground mt-2">
+              skew = {n.skewness?.toFixed(3)} · excess kurt = {n.excess_kurtosis?.toFixed(3)}
             </div>
           </div>
           <div className="px-5 py-4 flex flex-col justify-center text-right">
             <div className="num text-xs text-muted-foreground">JB</div>
-            <div className="num text-base font-semibold">{n.jarque_bera_stat.toFixed(2)}</div>
+            <div className="num text-base font-semibold">{n.statistic.toFixed(2)}</div>
             <div className="num text-[10px] text-muted-foreground mt-1">
               p = {n.p_value.toExponential(2)}
             </div>

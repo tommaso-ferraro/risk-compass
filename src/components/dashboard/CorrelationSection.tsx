@@ -3,6 +3,7 @@ import type { AnalyzeResponse } from "@/lib/api";
 
 export default function CorrelationSection({ data }: { data: AnalyzeResponse }) {
   const c = data.correlation;
+  const heatmap = c.matrix_png_b64 ?? c.correlation ?? data.charts.correlation;
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 border border-border bg-border gap-px">
       <div className="lg:col-span-2 bg-surface p-5">
@@ -10,9 +11,9 @@ export default function CorrelationSection({ data }: { data: AnalyzeResponse }) 
           <span className="font-semibold text-sm">Correlation matrix</span>
           <span className="label-mono">pearson · ρ</span>
         </div>
-        {c.matrix_png_b64 ? (
+        {heatmap ? (
           <img
-            src={`data:image/png;base64,${c.matrix_png_b64}`}
+            src={`data:image/png;base64,${heatmap}`}
             alt="Correlation heatmap"
             className="w-full h-auto block"
           />
@@ -24,16 +25,16 @@ export default function CorrelationSection({ data }: { data: AnalyzeResponse }) 
       <div className="bg-surface p-5 flex flex-col">
         <ExtremeCard
           label="Most correlated"
-          pair={c.most_correlated.pair}
-          value={c.most_correlated.value}
+          pair={c.highest_pair.pair}
+          value={c.highest_pair.correlation}
           tone="negative"
           note="High pairwise correlation reduces diversification — these assets move together under stress."
         />
         <div className="border-t border-border my-6" />
         <ExtremeCard
           label="Least correlated"
-          pair={c.least_correlated.pair}
-          value={c.least_correlated.value}
+          pair={c.lowest_pair.pair}
+          value={c.lowest_pair.correlation}
           tone="primary"
           note="Low or negative correlation provides genuine diversification and dampens portfolio variance."
         />
@@ -50,7 +51,7 @@ function ExtremeCard({
   note,
 }: {
   label: string;
-  pair: [string, string];
+  pair: string;
   value: number;
   tone: "negative" | "primary";
   note: string;
@@ -63,7 +64,7 @@ function ExtremeCard({
     <div>
       <div className="label-mono mb-3">{label}</div>
       <div className="font-mono text-base font-semibold mb-2">
-        {pair[0]} <span className="text-muted-foreground">↔</span> {pair[1]}
+        {pair}
       </div>
       <div className={`display-num text-4xl ${toneText} mb-3`}>
         {value >= 0 ? "+" : ""}{fmtNum(value, 3)}
