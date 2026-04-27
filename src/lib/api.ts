@@ -25,13 +25,34 @@ export type AnalyzeRequest = {
   end_date: string;
 };
 
-export type TickerStats = {
+export type OverviewRow = {
   ticker: string;
   weight: number;
-  annual_return: number;
-  annual_volatility: number;
+  ann_return: number;
+  ann_vol: number;
   sharpe: number;
 };
+
+export type VarMethod = {
+  method?: string;
+  confidence?: number;
+  var_pct: number;
+  var_eur: number;
+  mu_daily?: number;
+  sigma_daily?: number;
+  skewness?: number;
+  excess_kurtosis?: number;
+  z_cf?: number;
+};
+
+export type CVarMethod = {
+  method?: string;
+  confidence?: number;
+  cvar_pct: number;
+  cvar_eur: number;
+};
+
+export type Pair = { pair: string; correlation: number };
 
 export type AnalyzeResponse = {
   meta: {
@@ -40,25 +61,24 @@ export type AnalyzeResponse = {
     data_source?: string;
     [k: string]: any;
   };
-  overview: {
-    rows: TickerStats[];
-    portfolio: TickerStats;
-  };
+  overview: OverviewRow[];
   portfolio: {
     ann_return: number;
     ann_vol: number;
     sharpe: number;
     max_drawdown: number;
     mdd_pct: number;
-    portfolio_value: number;
+    trough_date?: string;
+    duration_days?: number;
+    portfolio_value?: number;
   };
   var: {
-    historical: { var_pct: number; var_eur: number };
-    parametric: { var_pct: number; var_eur: number };
-    cornish_fisher: { var_pct: number; var_eur: number };
-    cvar_historical: { cvar_pct: number; cvar_eur: number };
-    cvar_parametric: { cvar_pct: number; cvar_eur: number };
-    confidence: number;
+    historical: VarMethod;
+    parametric: VarMethod;
+    cornish_fisher: VarMethod;
+    cvar_historical: CVarMethod;
+    cvar_parametric: CVarMethod;
+    confidence?: number;
   };
   normality: {
     statistic: number;
@@ -69,10 +89,12 @@ export type AnalyzeResponse = {
     interpretation: string;
   };
   correlation: {
-    matrix_png_b64?: string;
-    correlation?: string;
-    highest_pair: { pair: string; correlation: number };
-    lowest_pair: { pair: string; correlation: number };
+    matrix: number[][];
+    labels: string[];
+    highest_pair: Pair;
+    lowest_pair: Pair;
+    avg_correlation: number;
+    interpretation: string;
   };
   charts: {
     distribution: string;

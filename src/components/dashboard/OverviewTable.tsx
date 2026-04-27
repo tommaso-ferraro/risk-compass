@@ -2,8 +2,9 @@ import { fmtNum, fmtPct, isNeg } from "@/lib/format";
 import type { AnalyzeResponse } from "@/lib/api";
 
 export default function OverviewTable({ data }: { data: AnalyzeResponse }) {
-  const rows = data.overview.rows;
-  const total = data.overview.portfolio;
+  const rows = Array.isArray(data?.overview) ? data.overview : [];
+  const p = data?.portfolio;
+  const totalWeight = rows.reduce((a, r) => a + (r?.weight ?? 0), 0);
 
   return (
     <div className="border border-border bg-surface">
@@ -21,7 +22,7 @@ export default function OverviewTable({ data }: { data: AnalyzeResponse }) {
         <tbody>
           {rows.map((r, i) => (
             <tr
-              key={r.ticker}
+              key={r.ticker ?? i}
               className="border-b border-border hover:bg-secondary/60 transition-colors"
             >
               <Td num className="text-muted-foreground w-10">
@@ -29,25 +30,27 @@ export default function OverviewTable({ data }: { data: AnalyzeResponse }) {
               </Td>
               <Td mono className="font-semibold">{r.ticker}</Td>
               <Td align="right" num>
-                <WeightBar pct={r.weight}>{fmtPct(r.weight, 1)}</WeightBar>
+                <WeightBar pct={r.weight ?? 0}>{fmtPct(r.weight, 1)}</WeightBar>
               </Td>
-              <Td align="right" num neg={isNeg(r.annual_return)}>
-                {fmtPct(r.annual_return)}
+              <Td align="right" num neg={isNeg(r.ann_return)}>
+                {fmtPct(r.ann_return)}
               </Td>
-              <Td align="right" num>{fmtPct(r.annual_volatility)}</Td>
+              <Td align="right" num>{fmtPct(r.ann_vol)}</Td>
               <Td align="right" num neg={isNeg(r.sharpe)}>
                 {fmtNum(r.sharpe)}
               </Td>
             </tr>
           ))}
-          <tr className="bg-foreground text-background border-t-2 border-foreground">
-            <Td num className="text-background/60">Σ</Td>
-            <Td mono bold>PORTFOLIO</Td>
-            <Td align="right" num bold>{fmtPct(total.weight, 1)}</Td>
-            <Td align="right" num bold>{fmtPct(total.annual_return)}</Td>
-            <Td align="right" num bold>{fmtPct(total.annual_volatility)}</Td>
-            <Td align="right" num bold>{fmtNum(total.sharpe)}</Td>
-          </tr>
+          {p && (
+            <tr className="bg-foreground text-background border-t-2 border-foreground">
+              <Td num className="text-background/60">Σ</Td>
+              <Td mono bold>PORTFOLIO</Td>
+              <Td align="right" num bold>{fmtPct(totalWeight, 1)}</Td>
+              <Td align="right" num bold>{fmtPct(p.ann_return)}</Td>
+              <Td align="right" num bold>{fmtPct(p.ann_vol)}</Td>
+              <Td align="right" num bold>{fmtNum(p.sharpe)}</Td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
