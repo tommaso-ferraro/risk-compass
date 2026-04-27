@@ -11,7 +11,7 @@ export default function HeroHeader({ data }: Props) {
   const conf = typeof confRaw === "number" ? (confRaw * 100).toFixed(0) : "—";
 
   const kpis = [
-    { label: "PORTFOLIO_VALUE", value: fmtMoney(p?.portfolio_value) },
+    { label: "PORTFOLIO_VALUE", value: fmtMoney(data?.meta?.portfolio_value) },
     { label: "ANN_RETURN", value: fmtPct(p?.ann_return), neg: isNeg(p?.ann_return) },
     { label: "ANN_VOLATILITY", value: fmtPct(p?.ann_vol) },
     { label: "SHARPE", value: fmtNum(p?.sharpe), neg: isNeg(p?.sharpe) },
