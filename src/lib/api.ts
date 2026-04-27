@@ -59,6 +59,7 @@ export type AnalyzeResponse = {
     start_date: string;
     end_date: string;
     data_source?: string;
+    portfolio_value?: number;
     [k: string]: any;
   };
   overview: OverviewRow[];
