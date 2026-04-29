@@ -200,7 +200,7 @@ export default function ControlPanel({ state, setState, onRecompute, loading }: 
       <div className="border-t border-border p-5 bg-surface">
         <button
           onClick={onRecompute}
-          disabled={loading}
+          disabled={loading || state.tickers.length === 0}
           className="w-full bg-foreground text-background font-mono text-xs uppercase tracking-[0.2em] py-3.5 hover:bg-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
         >
           {loading ? (
