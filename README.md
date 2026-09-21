@@ -6,11 +6,11 @@
 A quantitative risk-analytics dashboard for equity portfolios: Value at Risk
 (Historical, Parametric, Cornish-Fisher), Conditional VaR / Expected
 Shortfall, Sharpe ratio, maximum drawdown, correlation structure, and
-normality diagnostics — computed on real market data and presented in a
+normality diagnostics; computed on real market data and presented in a
 Swiss/brutalist-style interface.
 
-**Live demo:** [add your Vercel URL here]
-**Backend API:** [add your HuggingFace Space URL here]
+**Live demo:** [Vercel URL]
+**Backend API:** locklock/portfolio-risk-api
 
 <!-- Add a screenshot at docs/screenshot.png and uncomment the line below -->
 <!-- ![Dashboard screenshot](docs/screenshot.png) -->
