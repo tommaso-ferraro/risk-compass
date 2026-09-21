@@ -117,7 +117,7 @@ export default function ControlPanel({ state, setState, onRecompute, loading }: 
           </div>
 
           {/* Sum bar */}
-          <div className="relative h-1 bg-secondary mb-3">
+          <div className="relative h-1 bg-secondary mb-3 overflow-hidden">
             <div
               className={`absolute inset-y-0 left-0 ${offBy ? "bg-negative" : "bg-primary"}`}
               style={{ width: `${Math.min(sumPct, 200)}%` }}
