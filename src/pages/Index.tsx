@@ -24,6 +24,10 @@ function renormalize(weights: number[]) {
   return weights.map((w) => w / sum);
 }
 
+function getErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error && error.message ? error.message : fallback;
+}
+
 const Index = () => {
   const [defaults, setDefaults] = useState<Defaults | null>(null);
   const [state, setState] = useState<SidebarState | null>(null);
@@ -47,12 +51,11 @@ const Index = () => {
         };
         setState(initial);
         await runAnalyze(initial);
-      } catch (e: any) {
-        setError(e?.message || "Failed to load defaults");
+      } catch (e: unknown) {
+        setError(getErrorMessage(e, "Failed to load defaults"));
         setLoading(false);
       }
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function runAnalyze(s: SidebarState) {
@@ -71,8 +74,8 @@ const Index = () => {
         end_date,
       });
       setData(res);
-    } catch (e: any) {
-      setError(e?.message || "Analyze request failed");
+    } catch (e: unknown) {
+      setError(getErrorMessage(e, "Analyze request failed"));
     } finally {
       setLoading(false);
     }

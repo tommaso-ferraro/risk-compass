@@ -1,9 +1,6 @@
-// Read backend URL from Vite env, with REACT_APP_BACKEND_URL fallback for compatibility.
-const env = (import.meta as any).env ?? {};
+// Backend URL, configurable via VITE_BACKEND_URL (see .env.example). Falls back to local dev.
 export const BACKEND_URL: string =
-  env.VITE_BACKEND_URL ||
-  env.REACT_APP_BACKEND_URL ||
-  "http://localhost:8000";
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 
 export type Defaults = {
   tickers: string[];
@@ -60,7 +57,7 @@ export type AnalyzeResponse = {
     end_date: string;
     data_source?: string;
     portfolio_value?: number;
-    [k: string]: any;
+    [k: string]: unknown;
   };
   overview: OverviewRow[];
   portfolio: {
