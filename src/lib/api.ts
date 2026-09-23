@@ -103,6 +103,14 @@ export type AnalyzeResponse = {
   };
 };
 
+export type ComponentVarRow = {
+  ticker: string;
+  weight: number;
+  component_var_pct: number;
+  component_var_eur: number;
+  pct_of_total_var: number;
+};
+
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${BACKEND_URL}${path}`, {
     ...init,
