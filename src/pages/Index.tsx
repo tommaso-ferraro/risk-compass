@@ -77,7 +77,7 @@ const Index = () => {
       setData(res);
     } catch (e: unknown) {
       setError(getErrorMessage(e, "Analyze request failed"));
-    } fontally {
+    } finally {
       setLoading(false);
     }
   }
