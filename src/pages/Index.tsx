@@ -8,6 +8,7 @@ import OverviewTable from "@/components/dashboard/OverviewTable";
 import VarSection from "@/components/dashboard/VarSection";
 import ChartsGrid from "@/components/dashboard/ChartsGrid";
 import CorrelationSection from "@/components/dashboard/CorrelationSection";
+import ComponentVarSection from "@/components/dashboard/ComponentVarSection"; // <--- 1. NUOVO IMPORT
 import LearnMore from "@/components/dashboard/LearnMore";
 
 function dateRangeFromLookback(years: number) {
@@ -76,7 +77,7 @@ const Index = () => {
       setData(res);
     } catch (e: unknown) {
       setError(getErrorMessage(e, "Analyze request failed"));
-    } finally {
+    } fontally {
       setLoading(false);
     }
   }
@@ -163,6 +164,11 @@ const Index = () => {
 
             <Section number="04" title="Correlation & Diversification" caption="cross-asset structure">
               <CorrelationSection data={data} />
+            </Section>
+
+            {/* 2. NUOVA SEZIONE AGGIUNTA */}
+            <Section number="05" title="Component VaR Breakdown" caption="risk contribution analysis">
+              <ComponentVarSection data={data} />
             </Section>
 
             <Section number="A1" title="Appendix — Learn More" caption="methodology">
