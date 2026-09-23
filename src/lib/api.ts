@@ -51,6 +51,14 @@ export type CVarMethod = {
 
 export type Pair = { pair: string; correlation: number };
 
+export type ComponentVarRow = {
+  ticker: string;
+  weight: number;
+  component_var_pct: number;
+  component_var_eur: number;
+  pct_of_total_var: number;
+};
+
 export type AnalyzeResponse = {
   meta: {
     start_date: string;
@@ -78,6 +86,7 @@ export type AnalyzeResponse = {
     cvar_parametric: CVarMethod;
     confidence?: number;
   };
+  component_var?: ComponentVarRow[];
   normality: {
     statistic: number;
     p_value: number;
@@ -101,14 +110,6 @@ export type AnalyzeResponse = {
     drawdown: string;
     correlation: string;
   };
-};
-
-export type ComponentVarRow = {
-  ticker: string;
-  weight: number;
-  component_var_pct: number;
-  component_var_eur: number;
-  pct_of_total_var: number;
 };
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
